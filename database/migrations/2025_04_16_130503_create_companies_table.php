@@ -9,12 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->text('description')->nullable();
+            $table->boolean('is_verified')->default(false); // تایید ادمین
+            $table->foreignId('introduced_by_user_id')->constrained('users')->cascadeOnDelete(); // معرف شرکت
             $table->timestamps();
         });
     }
