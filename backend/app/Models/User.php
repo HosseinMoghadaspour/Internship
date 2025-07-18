@@ -39,14 +39,6 @@ class User extends Authenticatable
     }
 
     /**
-     * ارتباط با کامنت‌ها
-     */
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    /**
      * ارتباط با امتیازها
      */
     public function ratings()

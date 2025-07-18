@@ -47,7 +47,10 @@ const UserMenu: React.FC<{
   const handleLogOut = async () => {
     try {
       await logout();
-      localStorage.removeItem("token"); // حذف توکن
+      console.log(localStorage.getItem("token"));
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
       setSnackbar({ message: "خروج با موفقیت انجام شد!", type: "success" });
       setTimeout(() => {
         navigate("/");
@@ -60,6 +63,10 @@ const UserMenu: React.FC<{
       });
       console.log(error);
     }
+  };
+
+  const handleProfile = async () => {
+    navigate("/profile");
   };
 
   return (
@@ -93,11 +100,10 @@ const UserMenu: React.FC<{
       {isOpen && (
         <div className="absolute left-full top-15  w-56 bg-white rounded-xl shadow-lg z-50 overflow-hidden border border-gray-200 transition-all duration-200">
           <ul className="text-gray-800 text-sm font-medium divide-y divide-gray-100">
-            <li className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors">
-              <FaUserCircle className="w-5 h-5 text-blue-500" />
-              <span>شرکت‌های ثبت شده من</span>
-            </li>
-            <li className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors">
+            <li
+              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors"
+              onClick={handleProfile}
+            >
               <FaUserCircle className="w-5 h-5 text-green-500" />
               <span>اطلاعات کاربری</span>
             </li>

@@ -4,12 +4,13 @@ import api from "./api"; // مسیر دقیق به api.ts
 export async function getProfile() {
   try {
     const token = localStorage.getItem("token");
-    console.log(token);
    const response = await api.get("/profile", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log(response);
     
     return response.data;
   } catch (error: unknown) {

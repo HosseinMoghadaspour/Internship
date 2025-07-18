@@ -1,33 +1,67 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Button = () => {
+// 1. Interface updated with buttonWidth and buttonHeight
+interface ButtonProps {
+  buttonText?: string;
+  buttonColor?: string;
+  circleColor?: string;
+  circleSize?: string;
+  buttonWidth?: string;  // New prop for button width
+  buttonHeight?: string; // New prop for button height
+}
+
+// 2. Component updated with new props and default values
+const Button: React.FC<ButtonProps> = ({
+  buttonText = 'Submit',
+  buttonColor = '#171717',
+  circleColor = '#0c66ed',
+  circleSize = '30px',
+  buttonWidth = 'auto',
+  buttonHeight = 'auto'
+}) => {
   return (
-    <StyledWrapper>
+    <StyledWrapper
+      buttonColor={buttonColor}
+      circleColor={circleColor}
+      circleSize={circleSize}
+      buttonWidth={buttonWidth}
+      buttonHeight={buttonHeight}
+    >
       <button>
         <span className="circle1" />
         <span className="circle2" />
         <span className="circle3" />
         <span className="circle4" />
         <span className="circle5" />
-        <span className="text">Submit</span>
+        <span className="text">{buttonText}</span>
       </button>
     </StyledWrapper>
   );
 }
 
-const StyledWrapper = styled.div`
+// 3. Styled-component updated to use the new props
+const StyledWrapper = styled.div<ButtonProps>`
   button {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: white;
-    background-color: #171717;
+    background-color: ${props => props.buttonColor};
     padding: 1em 2em;
     border: none;
     border-radius: .6rem;
     position: relative;
     cursor: pointer;
     overflow: hidden;
+
+    /* Apply dynamic width and height */
+    width: ${props => props.buttonWidth};
+    height: ${props => props.buttonHeight};
+
+    /* Added for better text centering when height is set */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   button span:not(:nth-child(6)) {
@@ -35,9 +69,9 @@ const StyledWrapper = styled.div`
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    height: 30px;
-    width: 30px;
-    background-color: #0c66ed;
+    height: ${props => props.circleSize};
+    width: ${props => props.circleSize};
+    background-color: ${props => props.circleColor};
     border-radius: 50%;
     transition: .6s ease;
   }
@@ -69,6 +103,7 @@ const StyledWrapper = styled.div`
   button:hover span:not(:nth-child(6)) {
     transform: translate(-50%, -50%) scale(4);
     transition: 1.5s ease;
-  }`;
+  }
+`;
 
 export default Button;

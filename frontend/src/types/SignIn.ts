@@ -28,6 +28,7 @@ export async function signin(
 
     const token = response.data.data.token;
     localStorage.setItem("token", token);
+    console.log(token);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     return response.data.user;

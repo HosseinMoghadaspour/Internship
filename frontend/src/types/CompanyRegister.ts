@@ -10,7 +10,8 @@ export async function company(
   province: string,
   city: string,
   description: string,
-  introduced_by: number,
+  introduced_by: string,
+  address: string,
   images: File[]
 ) {
   const formData = new FormData();
@@ -18,15 +19,14 @@ export async function company(
   formData.append("province", province);
   formData.append("description", description);
   formData.append("city", city);
+  formData.append("address", address);
   formData.append("introduced_by", introduced_by.toString());
-
-  // افزودن عکس‌ها
   images.forEach((file) => {
     formData.append("images[]", file);
   });
-
+  console.log(introduced_by);
   try {
-    const response = await api.post("/companies", formData, {
+    const response = await api.post("/companyRegister", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -35,8 +35,8 @@ export async function company(
     return response.data; // اگر خواستی اطلاعات برگشتی مثل آیدی شرکت جدید رو استفاده کنی
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || "خطا در ورود");
+      throw new Error(error.response?.data?.message || "خطا در ثبت");
     }
-    throw new Error("خطای نامشخص در ورود");
+    throw new Error("خطای نامشخص در ثبت");
   }
 }

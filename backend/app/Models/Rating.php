@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Rating extends Model
 {
     use HasFactory;
-
-    public $timestamps = false;
-
-    protected $fillable = ['user_id', 'company_id', 'message', 'rating', 'create_at', 'update_at'];
+    protected $fillable = [
+        'user_id',
+        'company_id',
+        'message',
+        'rating',
+        'is_verified'
+    ];
 
     public function user()
     {
