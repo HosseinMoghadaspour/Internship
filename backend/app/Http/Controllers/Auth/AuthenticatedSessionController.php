@@ -15,7 +15,6 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request)
     {
-        // بررسی اعتبار username و password
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
                 'status' => 'error',
@@ -44,11 +43,8 @@ class AuthenticatedSessionController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        // اعتبارسنجی توسط RegisterRequest به صورت خودکار انجام شده است.
-
         $path = null;
         if ($request->hasFile('img')) {
-            // ذخیره عکس در پوشه 'profile_images' در storage/app/public
             $path = $request->file('img')->store('profile_images', 'public');
         }
 
@@ -70,7 +66,6 @@ class AuthenticatedSessionController extends Controller
                     'id' => $user->id,
                     'username' => $user->username,
                     'mobile' => $user->mobile,
-                    // ساخت URL کامل برای تصویر
                     'img' => $user->img ? asset('storage/' . $user->img) : null,
                 ],
                 'token' => $token
@@ -79,8 +74,6 @@ class AuthenticatedSessionController extends Controller
     }
     public function login(LoginRequest $request)
     {
-
-        // تلاش برای احراز هویت با استفاده از Auth facade
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
                 'status' => 'error',
@@ -108,7 +101,6 @@ class AuthenticatedSessionController extends Controller
     }
     public function logout(Request $request)
     {
-        // حذف توکن فعلی که برای درخواست استفاده شده است
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -125,9 +117,8 @@ class AuthenticatedSessionController extends Controller
             'id' => $user->id,
             'username' => $user->username,
             'img' => $user->img ? asset('storage/' . $user->img) : null,
-            'mobile'=> $user->mobile,
+            'mobile' => $user->mobile,
             'is_admin' => $user->is_admin,
         ]);
     }
-
 }

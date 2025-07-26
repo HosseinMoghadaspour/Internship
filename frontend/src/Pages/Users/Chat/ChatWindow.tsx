@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import api from "../../../types/api";
-import { Send, Smile, Paperclip, UserCircle2 } from 'lucide-react';
+import {UserCircle2 } from "lucide-react";
 
 type User = {
   id: number;
   username: string;
-  img?: string | null; 
+  img?: string | null;
 };
 
 type Message = {
@@ -14,30 +14,37 @@ type Message = {
   sender_id: number;
   receiver_id: number;
   text: string;
-  created_at: string; 
+  created_at: string;
 };
 
 const ChatWindow: React.FC<{ user: User }> = ({ user }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const currentUserId = 1; 
+  const currentUserId = user.id;
 
   const fetchMessages = () => {
     setIsLoading(true);
-    api.get(`/messages/${user.id}`)
+    api
+      .get(`/messages/${user.id}`)
       .then((res) => {
-        setMessages(res.data.sort((a: Message, b: Message) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())); // مرتب‌سازی پیام‌ها بر اساس تاریخ
+        setMessages(
+          res.data.sort(
+            (a: Message, b: Message) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+          )
+        ); // مرتب‌سازی پیام‌ها بر اساس تاریخ
       })
-      .catch(error => console.error("Error fetching messages:", error))
+      .catch((error) => console.error("Error fetching messages:", error))
       .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
     fetchMessages();
-    const intervalId = setInterval(fetchMessages, 5000); 
+    const intervalId = setInterval(fetchMessages, 5000);
     return () => clearInterval(intervalId);
-  }, [user.id]); 
+  }, [user.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,34 +52,41 @@ const ChatWindow: React.FC<{ user: User }> = ({ user }) => {
 
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
-    const tempMessageId = Date.now(); 
+
+    const tempMessageId = Date.now();
 
     const newMessage: Message = {
-        id: tempMessageId,
-        sender_id: currentUserId,
-        receiver_id: user.id,
-        text: text,
-        created_at: new Date().toISOString(),
-    };
-    setMessages(prevMessages => [...prevMessages, newMessage]);
-
-    api.post("/messages", {
+      id: tempMessageId,
+      sender_id: currentUserId,
       receiver_id: user.id,
-      message: text, 
-    })
-    .then((res) => {
-        setMessages(prevMessages => prevMessages.map(msg => msg.id === tempMessageId ? {...res.data, id: res.data.id || tempMessageId} : msg));
-        fetchMessages(); 
-    })
-    .catch(error => {
+      text: text,
+      created_at: new Date().toISOString(),
+    };
+
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    api
+      .post("/messages", {
+        receiver_id: user.id,
+        message: text,
+      })
+      .then((res) => {
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) => (msg.id === tempMessageId ? res.data : msg))
+        );
+      })
+      .catch((error) => {
         console.error("Error sending message:", error);
-        setMessages(prevMessages => prevMessages.filter(msg => msg.id !== tempMessageId));
-    });
+
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== tempMessageId)
+        );
+      });
   };
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (
@@ -90,7 +104,6 @@ const ChatWindow: React.FC<{ user: User }> = ({ user }) => {
         <h2 className="text-lg font-semibold text-gray-800">{user.username}</h2>
       </div>
 
-      
       <div className="flex-1 p-4 overflow-y-auto bg-slate-50">
         {isLoading && messages.length === 0 ? (
           <div className="flex justify-center items-center h-full">
@@ -98,7 +111,9 @@ const ChatWindow: React.FC<{ user: User }> = ({ user }) => {
           </div>
         ) : messages.length === 0 && !isLoading ? (
           <div className="flex justify-center items-center h-full">
-            <p className="text-gray-500">هنوز پیامی وجود ندارد. اولین پیام را ارسال کنید!</p>
+            <p className="text-gray-500">
+              هنوز پیامی وجود ندارد. اولین پیام را ارسال کنید!
+            </p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -114,12 +129,16 @@ const ChatWindow: React.FC<{ user: User }> = ({ user }) => {
                   className={`flex flex-col max-w-xs lg:max-w-md px-3 py-2 rounded-xl shadow-md group
                     ${
                       isSender
-                        ? "bg-blue-600 text-white rounded-bl-none"
-                        : "bg-white text-gray-800 border border-gray-200 rounded-br-none"
+                      ? "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                        : "bg-blue-600 text-white rounded-br-none"
                     }`}
                 >
                   <p className="text-sm break-words">{msg.text}</p>
-                  <span className={`text-xs mt-1 self-end opacity-70 group-hover:opacity-100 transition-opacity duration-200 ${isSender ? 'text-blue-200' : 'text-gray-500'}`}>
+                  <span
+                    className={`text-xs mt-1 self-end opacity-70 group-hover:opacity-100 transition-opacity duration-200 ${
+                      !isSender ? "text-blue-200" : "text-gray-500"
+                    }`}
+                  >
                     {formatTimestamp(msg.created_at)}
                   </span>
                 </div>

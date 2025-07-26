@@ -49,16 +49,12 @@ class CompanyController extends Controller
 
     public function update(Request $request, $id)
     {
-        // شرکت را پیدا می‌کند
         $company = Company::find($id);
 
-        // اگر شرکتی با این شناسه وجود نداشته باشد، خطا برمی‌گرداند
         if (!$company) {
             return response()->json(['message' => 'شرکت مورد نظر یافت نشد.'], 404);
         }
 
-        // فیلدهای دیگر را از درخواست ورودی اعتبارسنجی می‌کند
-        // 'sometimes' باعث می‌شود این فیلدها تنها در صورت وجود در درخواست، اعتبارسنجی شوند
         $validated = $request->validate([
             'name'        => 'sometimes|string|unique:companies,name,' . $company->id,
             'province'    => 'sometimes|string',
@@ -67,16 +63,11 @@ class CompanyController extends Controller
             'description' => 'sometimes|nullable|string',
         ]);
 
-        // ✅ مقدار is_verified را مستقیماً تغییر می‌دهد (toggle می‌کند)
-        // چه true باشد چه false، به مقدار مخالفش تغییر می‌کند
         $updateData = array_merge($validated, [
             'is_verified' => !$company->is_verified
         ]);
 
-        // اطلاعات شرکت را با داده‌های جدید (شامل is_verified تغییر یافته) به‌روزرسانی می‌کند
         $company->update($updateData);
-
-        // پاسخ موفقیت‌آمیز را به همراه اطلاعات به‌روزشده شرکت برمی‌گرداند
         return response()->json([
             'message' => 'اطلاعات شرکت با موفقیت به‌روزرسانی شد.',
             'company' => $company
@@ -100,7 +91,6 @@ class CompanyController extends Controller
             'companies' => $companies
         ]);
     }
-    // app/Http/Controllers/CompanyController.php
 
     public function show($id)
     {

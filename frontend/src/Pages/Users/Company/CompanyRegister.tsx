@@ -12,6 +12,19 @@ import company_logo from "../../../assets/Company.gif";
 import Icon from "../../../assets/RahAmooz.png";
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
+import provinces from "../../../lib/province.json";
+import citiesData from "../../../lib/cities.json";
+
+interface Province {
+  id: number;
+  title: string;
+}
+
+interface City {
+  id: number;
+  title: string;
+  province_id: number;
+}
 
 const RegisterCompany = () => {
   const [images, setImages] = useState<File[]>([]);
@@ -23,6 +36,9 @@ const RegisterCompany = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = location.state || {};
+
+  const [filteredCities, setFilteredCities] = useState<City[]>([]);
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +55,33 @@ const RegisterCompany = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+   const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const provinceId = e.target.value;
+    const province = provinces.find((p) => p.id.toString() === provinceId);
+
+    setSelectedProvinceId(provinceId);
+    setFormData((prev) => ({
+      ...prev,
+      province: province ? province.title : "",
+      city: "", 
+    }));
+
+    if (provinceId) {
+      const relatedCities = (citiesData as City[]).filter(
+        (city) => city.province_id.toString() === provinceId
+      );
+      setFilteredCities(relatedCities);
+    } else {
+      setFilteredCities([]); 
+    }
+  };
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -123,26 +166,37 @@ const RegisterCompany = () => {
 
             <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50">
               <FaMapMarkerAlt className="text-green-500 text-xl ml-2" />
-              <input
-                type="text"
+              <select
                 name="province"
-                placeholder="استان"
-                value={formData.province}
-                onChange={handleChange}
+                value={selectedProvinceId}
+                onChange={handleProvinceChange}
                 className="w-full bg-transparent focus:outline-none text-right"
-              />
+              >
+                <option value="">استان را انتخاب کنید</option>
+                {(provinces as Province[]).map((province) => (
+                  <option key={province.id} value={province.id}>
+                    {province.title}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50">
               <FaCity className="text-purple-500 text-xl ml-2" />
-              <input
-                type="text"
+              <select
                 name="city"
-                placeholder="شهر"
                 value={formData.city}
-                onChange={handleChange}
+                onChange={handleCityChange}
                 className="w-full bg-transparent focus:outline-none text-right"
-              />
+                disabled={!selectedProvinceId}
+              >
+                <option value="">شهر را انتخاب کنید</option>
+                {filteredCities.map((city) => (
+                  <option key={city.id} value={city.title}>
+                    {city.title}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center border border-gray-300 rounded-lg p-3 bg-gray-50">
@@ -223,7 +277,7 @@ const RegisterCompany = () => {
         </div>
       </div>
       {snackbar && <Snackbar message={snackbar.message} type={snackbar.type} />}
-      <Footer/>
+      <Footer />
     </div>
   );
 };

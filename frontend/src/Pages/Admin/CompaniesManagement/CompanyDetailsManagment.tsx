@@ -59,7 +59,7 @@ const CompanyDetailsPageSkeleton: React.FC = () => (
 const CompanyDetailsManagment: React.FC<Props> = ({ company, onBack }) => {
   const navigate = useNavigate();
   const [coverImage, setCoverImage] = useState<string | null>(
-    company.images[0].image_path
+    company.images?.[0]?.image_path || null
   );
   const [unapprovedCompanies, setUnapprovedCompanies] = useState<Company[]>([]);
   const [snackbar, setSnackbar] = useState<{
@@ -133,7 +133,7 @@ const CompanyDetailsManagment: React.FC<Props> = ({ company, onBack }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12 items-start">
           <div className="md:col-span-2 flex flex-col items-center md:items-stretch">
-            {company.images[0] ? (
+            {company.images && company.images.length > 0 ? (
               <div className="w-full aspect-square md:aspect-[4/3] rounded-lg overflow-hidden shadow-xl mb-6 border-2 border-indigo-200 bg-white">
                 <img
                   src={`http://localhost:8000/storage/${coverImage}`}

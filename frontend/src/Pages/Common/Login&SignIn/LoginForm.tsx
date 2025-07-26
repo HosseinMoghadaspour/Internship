@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
               </form>
               <p className="text-sm text-center text-gray-500">
                 حساب کاربری ندارید؟{" "}
-                <a href="#" className="text-indigo-600 hover:underline">
+                <a href="/register" className="text-indigo-600 hover:underline">
                   ثبت‌نام
                 </a>
               </p>

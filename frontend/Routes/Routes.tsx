@@ -15,7 +15,6 @@ import SearchPage from "../src/Pages/Users/Search/SearchPage";
 function RoutesPage() {
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<SignIn />} />

@@ -9,8 +9,8 @@ import {
   AiFillDislike,
 } from "react-icons/ai";
 import { FaStar } from "react-icons/fa";
-import TempButton from "../../../components/Button";
-import { CgSpinner } from "react-icons/cg"; // Import a spinner icon
+import { CgSpinner } from "react-icons/cg"; 
+import api from "../../../types/api";
 
 type Company = {
   id: number;
@@ -247,7 +247,7 @@ const CompanyDetails: React.FC = () => {
         const commentsWithReactions = await Promise.all(
           fetchedComments.map(async (comment) => {
             try {
-              const reactionResponse = await axios.get(
+              const reactionResponse = await api.get(
                 `http://localhost:8000/api/comments/${comment.id}/reactions/${user.id}`
               );
               return {
@@ -303,7 +303,7 @@ const CompanyDetails: React.FC = () => {
     setSubmitSuccess(null);
 
     try {
-      await axios.post("http://localhost:8000/api/RatingAndComments", {
+      await api.post("http://localhost:8000/api/RatingAndComments", {
         user_id: user.id,
         company_id: id,
         message: newComment,
@@ -418,7 +418,7 @@ const CompanyDetails: React.FC = () => {
     );
 
     try {
-      await axios.post("http://localhost:8000/api/commentReaction", {
+      await api.post("http://localhost:8000/api/commentReaction", {
         user_id: user.id,
         rating_id: commentId,
         is_like: isLike,
